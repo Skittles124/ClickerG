@@ -5,7 +5,6 @@ var massivetxt=[
 ];
 var randomsov=Math.floor(Math.random() * 3);
 alert(massivetxt[randomsov]);
-
 var upgraderr=document.getElementById("OpenUp");
 var back=document.getElementById("close");
 var h1Id = document.getElementById("h1");
@@ -17,24 +16,20 @@ var upgrade20=document.getElementById('upgrade2');
 var upgrade30=document.getElementById('upgrade3');
 var upgrade40=document.getElementById('upgrade4');
 var upgrade50=document.getElementById('upgrade5');
-
+var shopClick = document.getElementById("shopClick");
+var shopClickPerMinute = document.getElementById("shopClickPerMinute");
+var backShop = document.getElementById("backShop");
+var autoUpgrade = document.getElementById("autoUpgrade");
+var backShopMenu = document.getElementById("backShopMenu");
+var backMain = document.getElementById("backMain");
 let autoClickPower = parseInt(sessionStorage.getItem("autoClickPower")) || 0;
 let autoclickInterval = null;
 let particlesEnabled = true;
-
-document.getElementById("toggleParticles").addEventListener("click", function(){
-
-    particlesEnabled = !particlesEnabled;
-
-    document.getElementById("particles").style.display =
-    particlesEnabled ? "block" : "none";
-
-    this.textContent =
-    particlesEnabled ?
-    "Выключить частицы" :
-    "Включить частицы";
-
-});
+var totalStats = document.getElementById("totalStats");
+var autoStats = document.getElementById("autoStats");
+var powerStats = document.getElementById("powerStats");
+let autoClicks = parseInt(sessionStorage.getItem("autoClicks")) || 0;
+let autoPrice = parseInt(sessionStorage.getItem("autoPrice")) || 100;
 let clickPerMinuteVariable=document.getElementById("clicksminute");
 var counter = parseInt(sessionStorage.getItem("counter")) || 0;
 alert("сохраняйте прогресс, иначе он пропадёт при закрытии страницы!");
@@ -53,23 +48,24 @@ function clicksPerMinute() {
     sessionStorage.setItem("upgrade0", upgrade0);
 }
 setInterval(clicksPerMinute, 60000);
-
 var upgrade0 = parseInt(sessionStorage.getItem("upgrade0")) || 1;
 document.addEventListener('keydown', function(event) {
     if (event.keyCode === 13 ) {
         buttonId.blur();
     }
 });
-upgraderr.addEventListener('click',function(){
-	upgraderr.classList.add('hidden');
-	back.classList.remove('hidden');
-	upgrade10.classList.remove('hidden');
-    upgrade20.classList.remove('hidden');
-    upgrade30.classList.remove('hidden');
-    upgrade40.classList.remove('hidden');
-    upgrade50.classList.remove('hidden');
+upgraderr.addEventListener('click', function(){
+    upgraderr.classList.add('hidden');
     settings.classList.add('hidden');
-    });
+    shopClick.classList.remove('hidden');
+    shopClickPerMinute.classList.remove('hidden');
+    backShopMenu.classList.remove('hidden');
+});
+backShopMenu.addEventListener('click', function(){
+    hideAllShopUI();
+    upgraderr.classList.remove('hidden');
+    settings.classList.remove('hidden');
+});
     back.addEventListener('click',function(){
 	upgraderr.classList.remove('hidden');
 	back.classList.add('hidden');
@@ -79,8 +75,33 @@ upgraderr.addEventListener('click',function(){
     upgrade40.classList.add('hidden');
     upgrade50.classList.add('hidden');
     settings.classList.remove('hidden');
-    
     });
+   shopClickPerMinute.addEventListener('click', function(){
+    shopClick.classList.add('hidden');
+    shopClickPerMinute.classList.add('hidden');
+    backMain.classList.remove('hidden');
+    autoUpgrade.classList.remove('hidden');
+});
+autoUpgrade.addEventListener('click', function(){
+    if(counter < autoPrice){
+        alert("Нужно больше кликов!");
+        return;
+    }
+    counter -= autoPrice;
+    autoClicks++;
+    autoPrice = Math.floor(autoPrice * 1.5);
+    autoUpgrade.textContent =
+    "Купить авто-клик (" + autoPrice + ")";
+    h1Id.textContent = "Всего кликов: " + counter;
+    sessionStorage.setItem("autoClicks", autoClicks);
+    sessionStorage.setItem("autoPrice", autoPrice);
+});
+setInterval(function(){
+    counter += autoClicks;
+    h1Id.textContent = "Всего кликов: " + counter;
+
+    sessionStorage.setItem("counter", counter);
+}, 1000);
 upgrade10.addEventListener('click', function(){
      if(10>counter){
         alert("Недостаточно кликов для покупки улучшения");
@@ -126,7 +147,28 @@ upgrade50.addEventListener('click', function(){
     upgrade0 = upgrade0+5 ;
     h1Id.textContent = "Всего кликов: " + counter;
 });
-
+backShop.addEventListener('click', function(){
+    backShop.classList.add('hidden');
+    shopClick.classList.add('hidden');
+    shopClickPerMinute.classList.add('hidden');
+    upgraderr.classList.remove('hidden');
+    settings.classList.remove('hidden');
+    upgrade10.classList.add('hidden');
+    upgrade20.classList.add('hidden');
+    upgrade30.classList.add('hidden');
+    upgrade40.classList.add('hidden');
+    upgrade50.classList.add('hidden');
+});
+shopClick.addEventListener('click', function(){
+    shopClick.classList.add('hidden');
+    shopClickPerMinute.classList.add('hidden');
+    backMain.classList.remove('hidden');
+    upgrade10.classList.remove('hidden');
+    upgrade20.classList.remove('hidden');
+    upgrade30.classList.remove('hidden');
+    upgrade40.classList.remove('hidden');
+    upgrade50.classList.remove('hidden');
+});
 console.log("Всё работает):", buttonId);
 buttonId.addEventListener("click", function(){
     counter=counter+upgrade0;
@@ -148,11 +190,8 @@ backsettings.addEventListener('click',function(){
     document.getElementById("resetProgress").classList.add("hidden");
     });
     document.getElementById("resetProgress").addEventListener("click", function(){
-
     sessionStorage.clear();
-
     location.reload();
-
 });
 document.addEventListener('DOMContentLoaded', function() {
     const winButton = document.getElementById('winButton');
@@ -174,7 +213,6 @@ document.addEventListener('DOMContentLoaded', function() {
             winScreen.style.display = "flex";
         }
     });
-
     setInterval(checkWin, 600);
     checkWin();
 });
@@ -187,7 +225,6 @@ setTimeout(() => {
     if (winButton) {
         winButton.style.display = "block";
         console.log("Кнопка принудительно показана");
-        
         winButton.onclick = function() {
             counter -= 10000;
             h1Id.textContent = "Всего кликов: " + counter;
@@ -200,33 +237,86 @@ setTimeout(() => {
 let canClick = true;
 
 buttonId.addEventListener("click", function(){
+    const rect = buttonId.getBoundingClientRect();
 
+createClickParticles(
+    rect.left + rect.width / 2,
+    rect.top + rect.height / 2
+);
+    showFloatText(
+    Math.random() * window.innerWidth,
+    Math.random() * window.innerHeight * 0.6,
+    "+" + upgrade0);
     if (!canClick) return;
-
     canClick = false;
-
     counter += upgrade0;
-
-    h1Id.textContent = "Всего кликов: " + counter;
-
+    updateUI();
     sessionStorage.setItem("counter", counter);
-
     buttonId.disabled = true;
-
     buttonId.textContent = "Ожидание...";
-
     buttonId.classList.add("cooldown");
-
     setTimeout(function(){
-
         buttonId.disabled = false;
-
         buttonId.textContent = "Жми!";
-
         canClick = true;
-
         buttonId.classList.remove("cooldown");
-
     }, 300);
 
 });
+document.getElementById("helpBtn").onclick = function () {
+    window.open("guide.html", "_blank");
+};
+function hideAllShopUI(){
+    shopClick.classList.add('hidden');
+    shopClickPerMinute.classList.add('hidden');
+    backShopMenu.classList.add('hidden');
+    backMain.classList.add('hidden');
+    upgrade10.classList.add('hidden');
+    upgrade20.classList.add('hidden');
+    upgrade30.classList.add('hidden');
+    upgrade40.classList.add('hidden');
+    upgrade50.classList.add('hidden');
+    autoUpgrade.classList.add('hidden');
+
+}
+function showFloatText(x, y, text) {
+    const el = document.createElement("div");
+    el.className = "floatText";
+    el.textContent = text;
+
+    el.style.left = x + "px";
+    el.style.top = y + "px";
+
+    document.getElementById("floatTextContainer").appendChild(el);
+
+    setTimeout(() => el.remove(), 800);
+}
+function createClickParticles(x, y) {
+    const container = document.getElementById("clickParticles");
+
+    for (let i = 0; i < 6; i++) {
+
+        const p = document.createElement("div");
+        p.className = "particleClick";
+
+        p.style.left = x + "px";
+        p.style.top = y + "px";
+
+        const angle = Math.random() * Math.PI * 2;
+        const distance = Math.random() * 60 + 20;
+
+        p.style.setProperty("--dx", Math.cos(angle) * distance + "px");
+        p.style.setProperty("--dy", Math.sin(angle) * distance + "px");
+
+        container.appendChild(p);
+
+        setTimeout(() => p.remove(), 600);
+    }
+}
+function updateUI() {
+    h1Id.textContent = "Всего кликов: " + counter;
+
+    totalStats.textContent = counter;
+    autoStats.textContent = autoClicks;
+    powerStats.textContent = upgrade0;
+}
