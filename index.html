@@ -5,7 +5,6 @@
     <title>Кликер</title>
     <link rel="stylesheet" href="style.css">
 </head>
-</div #game>
 <body>
     <div id="upgrade">
         <button  id="OpenUp">Открыть Улучшатор</button>
@@ -14,7 +13,9 @@
         <button class="hidden" id="close">Обратно</button>
         <button class="hidden" id="shopClick">Магазин кликов</button>
         <button class="hidden" id="shopClickPerMinute">Авто-клики</button>
-        <button class="hidden" id="backShop">Назад</button>
+        <button class="hidden" id="backShop">🤖</button>
+        <button class="hidden" id="backShopMenu">Назад в меню</button>
+        <button class="hidden" id="backMain">👾</button>
         <button class="hidden" id="upgrade1">Улучшение:  10 кликов</button>
         <button class="hidden" id="upgrade2">Улучшение:  20 кликов</button>
         <button class="hidden" id="upgrade3">Улучшение:  30 кликов</button>
@@ -22,12 +23,24 @@
         <button class="hidden" id="upgrade5">Улучшение:  50 кликов</button>
         <button class="hidden" id="resetProgress">Сбросить прогресс</button>
         <button class="hidden" id="toggleParticles">Выключить частицы</button>
-
+        <button class="hidden" id="autoUpgrade">Купить авто-клик (100)</button>
     </div>
+    <div id="statsPanel">
+    <p>📊 Всего кликов: <span id="totalStats">0</span></p>
+    <p>🤖 Авто-клики: <span id="autoStats">0</span></p>
+    <p>⚡ Сила клика: <span id="powerStats">1</span></p>
+</div>
+<div id="progressBar">
+    <div id="progressFill"></div>
+</div>
+<div id="tipBox">
+    💡 Совет: сначала качай авто-клики
+</div>
     <div class="main-content">
         <h1 id="h1">Кликов сделано:0</h1>
         <button id="button">Жми!</button>
-        <p id="clicksminute">Кликов в минуту:1</p>
+        <p id="clicksminute">Кликов в cекунду:1</p>
+        <button id="helpBtn">📖 Как играть</button>
     </div>
     <button id="winButton" style="display:none; margin:40px auto; padding:20px 60px; font-size:28px; background:#d32f2f; color:white; border:none; border-radius:12px; cursor:pointer;">
         Пройти игру (10000 кликов)
@@ -40,9 +53,8 @@
             <button onclick="location.reload()" style="padding:15px 50px; font-size:24px; margin-top:20px;">Играть заново</button>
         </div>
     </div>
-</body> 
-    </div>
-    </div>
+    <div id="floatTextContainer"></div>
+    <div id="clickParticles"></div>
     <div id="particles"></div>
     <script src="script.js"></script>
     <script src="particles.js"></script>
